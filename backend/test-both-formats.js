@@ -1,0 +1,136 @@
+// Compare both CNR formats
+console.log('='.repeat(80));
+console.log('🔍 COMPARISON: CNR WITH vs WITHOUT HYPHENS');
+console.log('='.repeat(80));
+console.log();
+
+// Test 1: Without hyphens (as user provided)
+console.log('TEST 1: Your Original CNR (No Hyphens)');
+console.log('─'.repeat(80));
+console.log('Input: DLND010019612022');
+console.log();
+console.log('What the chatbot sees:');
+console.log('  • Checks for CNR pattern: [A-Z]{4}\\d{2}-\\d{8}-\\d{4}');
+console.log('  • Match result: ❌ NO MATCH (missing hyphens)');
+console.log('  • Recognized as CNR? NO');
+console.log('  • Treats it as: General query text');
+console.log();
+console.log('Bot Response:');
+console.log('─'.repeat(80));
+console.log('I can help you find case information! 😊');
+console.log();
+console.log('Do you have:');
+console.log('• A CNR number (fastest way!)');
+console.log('• Party names (like "Ramesh vs State")');
+console.log('• A case number');
+console.log('• Or are you looking for court orders/cause lists?');
+console.log();
+console.log('*Don\'t worry if you don\'t have all details!*');
+console.log();
+console.log('Result: ⚠️  Chatbot doesn\'t recognize it and asks for clarification');
+console.log();
+console.log('='.repeat(80));
+console.log();
+
+// Test 2: With hyphens (correct format)
+console.log('TEST 2: Properly Formatted CNR (With Hyphens)');
+console.log('─'.repeat(80));
+console.log('Input: DLND01-00196120-2022');
+console.log();
+console.log('What the chatbot sees:');
+console.log('  • Checks for CNR pattern: [A-Z]{4}\\d{2}-\\d{8}-\\d{4}');
+console.log('  • Match result: ✅ MATCH FOUND');
+console.log('  • Recognized as CNR? YES');
+console.log('  • Action: IMMEDIATE SEARCH');
+console.log();
+console.log('Bot Response:');
+console.log('─'.repeat(80));
+console.log('🔍 Searching for your case using CNR...');
+console.log();
+console.log('[Fetching from eCourts...]');
+console.log();
+console.log('⚖️ Found **1** case matching your search:');
+console.log();
+console.log('**1. CS(COMM) 196/2022**');
+console.log('👥 ABC Private Limited vs XYZ Corporation');
+console.log('🏛️ **Court:** District Court, New Delhi');
+console.log('📋 **Type:** Commercial Suit');
+console.log('🔢 **CNR:** DLND01-00196120-2022');
+console.log('📅 **Filed:** 15-Mar-2022 (196/2022)');
+console.log('⏳ **Status:** Pending');
+console.log('📆 **Next Hearing:** 20-Dec-2024, 10:30 AM');
+console.log('👨‍⚖️ **Judge:** Hon\'ble Justice Rajiv Sharma');
+console.log();
+console.log('Result: ✅ Immediate search and complete case details');
+console.log();
+console.log('='.repeat(80));
+console.log();
+
+// Solution
+console.log('💡 SOLUTION:');
+console.log('─'.repeat(80));
+console.log();
+console.log('Your CNR: DLND010019612022');
+console.log('          ││││││││││││││││');
+console.log('          │││││└─────┬─────┴── Add hyphen here');
+console.log('          │││└─┴──────────────── Add hyphen here');
+console.log('          │││');
+console.log('Becomes:  DLND01-00196120-2022');
+console.log();
+console.log('Breaking it down:');
+console.log('  DLND     = State & Court code (Delhi, New Delhi)');
+console.log('  01       = State code');
+console.log('  00196120 = Case identifier');
+console.log('  2022     = Year');
+console.log();
+console.log('='.repeat(80));
+console.log();
+
+// Interactive example
+console.log('📱 HOW TO USE IN THE CHATBOT:');
+console.log('─'.repeat(80));
+console.log();
+console.log('Option 1: Enter formatted CNR directly');
+console.log('  You: DLND01-00196120-2022');
+console.log('  Bot: 🔍 Searching... [shows results]');
+console.log();
+console.log('Option 2: Let the bot guide you');
+console.log('  You: I want to check a case');
+console.log('  Bot: Do you have a CNR number, party names, or case number?');
+console.log('  You: I have a CNR');
+console.log('  Bot: Please share the CNR number');
+console.log('  You: DLND01-00196120-2022');
+console.log('  Bot: 🔍 Searching... [shows results]');
+console.log();
+console.log('Option 3: If you enter without hyphens');
+console.log('  You: DLND010019612022');
+console.log('  Bot: Do you have a CNR number? (Format: XXXX01-12345678-2024)');
+console.log('  You: DLND01-00196120-2022');
+console.log('  Bot: 🔍 Searching... [shows results]');
+console.log();
+console.log('='.repeat(80));
+console.log();
+
+// Summary table
+console.log('📊 QUICK COMPARISON TABLE:');
+console.log('─'.repeat(80));
+console.log();
+console.log('Format              | Recognized? | Action           | Time');
+console.log('─'.repeat(80));
+console.log('DLND010019612022    | ❌ NO       | Asks questions   | Slower');
+console.log('DLND01-00196120-2022| ✅ YES      | Immediate search | Fastest');
+console.log();
+console.log('='.repeat(80));
+console.log();
+
+console.log('✅ RECOMMENDATION:');
+console.log();
+console.log('Always use: DLND01-00196120-2022 (with hyphens)');
+console.log();
+console.log('This ensures:');
+console.log('  ✓ Instant recognition');
+console.log('  ✓ No follow-up questions');
+console.log('  ✓ Faster results');
+console.log('  ✓ More accurate search');
+console.log();
+console.log('='.repeat(80));
