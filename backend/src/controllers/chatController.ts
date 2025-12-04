@@ -25,26 +25,56 @@ export class ChatController {
 
       // If action is 'search', fetch the data
       if (response.action === 'search') {
+        let results: any[] = [];
+        const errors: string[] = [];
+
+        // Strategy: Try Kleopatra API first (more reliable), then eCourts scraping
+        console.log('\n=== STARTING CASE SEARCH ===');
+        console.log('Search parameters:', JSON.stringify(response.extracted, null, 2));
+
+        // Method 1: Try Kleopatra API (Primary - Most Reliable)
         try {
-          // Try eCourts first
-          let results = await ecourtsScraper.searchCases(response.extracted!);
+          console.log('[Primary] Trying Kleopatra API...');
+          results = await kleopatraApi.searchDistrictCourt(response.extracted!);
 
-          // If no results and we have CNR/party name, try Kleopatra API as backup
-          if (results.length === 0 && (response.extracted?.cnr || response.extracted?.partyName)) {
-            console.log('Trying Kleopatra API as backup...');
-            try {
-              results = await kleopatraApi.searchDistrictCourt(response.extracted!);
-            } catch (kleoError) {
-              console.log('Kleopatra API also failed, using eCourts results');
-            }
+          if (results.length > 0) {
+            console.log(`[Primary] ✅ Kleopatra API SUCCESS: Found ${results.length} case(s)`);
+          } else {
+            console.log('[Primary] ⚠️  Kleopatra API returned 0 results');
+            errors.push('Kleopatra API: No cases found');
           }
+        } catch (kleoError: any) {
+          console.error('[Primary] ❌ Kleopatra API FAILED:', kleoError.message);
+          errors.push(`Kleopatra API: ${kleoError.message}`);
+        }
 
+        // Method 2: Try eCourts scraping (Backup)
+        if (results.length === 0) {
+          try {
+            console.log('[Backup] Trying eCourts website scraping...');
+            results = await ecourtsScraper.searchCases(response.extracted!);
+
+            if (results.length > 0) {
+              console.log(`[Backup] ✅ eCourts SCRAPING SUCCESS: Found ${results.length} case(s)`);
+            } else {
+              console.log('[Backup] ⚠️  eCourts scraping returned 0 results');
+              errors.push('eCourts: No cases found');
+            }
+          } catch (ecourtError: any) {
+            console.error('[Backup] ❌ eCourts SCRAPING FAILED:', ecourtError.message);
+            errors.push(`eCourts: ${ecourtError.message}`);
+          }
+        }
+
+        console.log('=== SEARCH COMPLETE ===\n');
+
+        // Format results or show error
+        if (results.length > 0) {
           response.results = results;
           response.message = conversationEngine.formatResults(results, response.portal || 'casestatus');
-        } catch (searchError: any) {
-          console.error('Search error:', searchError);
-          response.message = `❌ Sorry, I encountered an error while searching:\n\n${searchError.message}\n\nThe eCourts website might be temporarily down. Would you like to try again or search with different parameters?`;
+        } else {
           response.results = [];
+          response.message = `❌ **No cases found**\n\nI searched using:\n${errors.map(e => `• ${e}`).join('\n')}\n\n**This could mean:**\n• The CNR/case details might be incorrect\n• The case is in a different court or state\n• The case data is not yet available online\n• Both eCourts and Kleopatra API are experiencing issues\n\n**What you can do:**\n• Double-check the CNR format (e.g., DLHC01-12345678-2024)\n• Try searching with party names instead\n• Visit eCourts website directly: https://ecourts.gov.in\n• Try again in a few minutes`;
         }
       }
 
@@ -72,24 +102,39 @@ export class ChatController {
         return;
       }
 
-      // Try eCourts first
-      let results = await ecourtsScraper.searchCases(params);
+      let results: any[] = [];
+      let source = '';
 
-      // If no results, try Kleopatra API
+      // Try Kleopatra API first (more reliable)
+      try {
+        console.log('[API] Trying Kleopatra API...');
+        results = await kleopatraApi.searchDistrictCourt(params);
+        source = 'Kleopatra API';
+        console.log(`[API] Kleopatra found ${results.length} cases`);
+      } catch (kleoError: any) {
+        console.error('[API] Kleopatra failed:', kleoError.message);
+      }
+
+      // If no results, try eCourts scraping
       if (results.length === 0) {
         try {
-          results = await kleopatraApi.searchDistrictCourt(params);
-        } catch (kleoError) {
-          console.log('Kleopatra API failed');
+          console.log('[API] Trying eCourts scraping...');
+          results = await ecourtsScraper.searchCases(params);
+          source = 'eCourts India';
+          console.log(`[API] eCourts found ${results.length} cases`);
+        } catch (ecourtError: any) {
+          console.error('[API] eCourts failed:', ecourtError.message);
         }
       }
 
       res.json({
         results,
-        count: results.length
+        count: results.length,
+        source: source || 'None',
+        success: results.length > 0
       });
     } catch (error: any) {
-      console.error('Search error:', error);
+      console.error('[API] Search error:', error);
       res.status(500).json({
         error: 'Search failed',
         message: error.message
